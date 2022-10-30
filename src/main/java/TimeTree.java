@@ -1,12 +1,15 @@
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.util.Properties;
 import java.net.URI;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.json.JSONObject;
 
 public class TimeTree {
@@ -15,6 +18,7 @@ public class TimeTree {
     String url = "https://timetreeapis.com";
     String calender_id = "";
     HttpRequest request = null;
+    final Logger logger = Logger.getLogger("TimeTreeClass");
 
 
     public TimeTree() {
@@ -46,7 +50,6 @@ public class TimeTree {
         try {
             var response = client.send(this.request, HttpResponse.BodyHandlers.ofString());
             ret_val = response.body();
-
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -58,45 +61,79 @@ public class TimeTree {
      */
     public void writeEvent(){
 
-        //
+        HttpURLConnection connection = null;
+        try{
+            String event = convertJsonFormat();
 
-        HttpRequest request = HttpRequest.newBuilder(
-                        URI.create(this.url + "/calendars/" + this.calender_id + "/events"))
-                .header("Authorization", "Bearer " + this.accessToken)
-                .header("Accept", "application/vnd.timetree.v1+json")
-                .header("Content-Type", "application/json")
-                .build();
+            URL url = new URL(this.url + "/calendars/" + this.calender_id + "/events");
+
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("Authorization", "Bearer " + this.accessToken);
+            connection.setRequestProperty("Accept", "application/vnd.timetree.v1+json");
+            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+            connection.connect();
+            PrintStream ps = new PrintStream(connection.getOutputStream());
+            ps.print(event);
+            ps.close();
 
 
+            int responseStatus = connection.getResponseCode();
 
+            if(responseStatus != 201){
+                InputStream stream = connection.getErrorStream();
+                if (null == stream) {
+                    System.out.println("InputStream を参照します");
+                    stream = connection.getInputStream();
+                }
+                String line = "";
+                BufferedReader br = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+                while ((line = br.readLine()) != null) {
+                    logger.log(Level.WARNING, line);
+                }
+            }else{
+                logger.log(Level.INFO, "イベント登録処理が完了しました。");
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(connection != null) connection.disconnect();
+        }
     }
 
-    public JSONObject convertJsonFormat(){
+    private String convertJsonFormat(){
         JSONObject attributes = new JSONObject();
         attributes.put("category", "schedule");
-        attributes.put("title", "javaです\uD83D\uDE0A");
-        attributes.put("all_day", "true");
-        attributes.put("start_at", "2022-10-04T00:00:00.000Z");
+        attributes.put("title", "register event by java");
+        attributes.put("all_day", true);
+        attributes.put("start_at", "2022-10-05T00:00:00.000Z");
         attributes.put("start_timezone", "UTC");
-        attributes.put("end_at", "2022-10-04T00:00:00.000Z");
+        attributes.put("end_at", "2022-10-05T00:00:00.000Z");
         attributes.put("end_timezone", "UTC");
         attributes.put("description", "これはテストです");
 
         JSONObject relationships_data = new JSONObject();
-        relationships_data.put("id", this.calender_id);
+        relationships_data.put("id", this.calender_id + ",1");
         relationships_data.put("type", "label");
 
         JSONObject label = new JSONObject();
-        label.put("label", relationships_data);
+        label.put("data", relationships_data);
 
-        JSONObject event = new JSONObject();
-        event.put("attributes", attributes);
-        event.put("relationships", label);
+        JSONObject relationships = new JSONObject();
+        relationships.put("label", label);
+
 
         JSONObject data = new JSONObject();
-        data.put("data", event);
+        data.put("relationships", relationships);
+        data.put("attributes", attributes);
+
+        JSONObject event = new JSONObject();
+        event.put("data", data);
 
 
-        return data;
+        return event.toString();
     }
 }

@@ -6,9 +6,9 @@ public class ConditionNotice {
         TimeTree timeTree = new TimeTree();
         // System.out.println(timeTree.readEvent());
         Map<String, String> event = new HashMap<>();
-        // timeTree.writeEvent();
-
-        System.out.println(timeTree.convertJsonFormat());
+        System.out.println("start");
+        timeTree.writeEvent();
+        System.out.println("end");
     }
 }
 
