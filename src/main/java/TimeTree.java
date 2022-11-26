@@ -16,7 +16,7 @@ public class TimeTree {
 
     String accessToken = "";
     String url = "https://timetreeapis.com";
-    String calender_id = "";
+    String calenderId = "";
     HttpRequest request = null;
     final Logger logger = Logger.getLogger("TimeTreeClass");
 
@@ -25,14 +25,18 @@ public class TimeTree {
         // API TOKENの読み込み
         Properties properties = new Properties();
         try(
-                FileInputStream file = new FileInputStream("src/main/resources/timeTree.properties");
+                FileInputStream file = new FileInputStream("./src/main/resources/timeTree.properties");
                 InputStreamReader input = new InputStreamReader(file, Charset.defaultCharset());
             ){
             properties.load(input);
-            this.accessToken = properties.getProperty("ACCESS_TOKEN");
-            this.calender_id = properties.getProperty("CALENDER_ID");
+            // this.accessToken = properties.getProperty("ACCESS_TOKEN");
+            this.accessToken = System.getenv("timeTreeAccessToken");
+            System.out.println(this.accessToken);
+            // this.calender_id = properties.getProperty("timeTreeCalenderId");
+            this.calenderId = System.getenv("timeTreeCalenderId");
+            System.out.println(this.calenderId);
             this.request = HttpRequest.newBuilder(
-                            URI.create(this.url + "/calendars/" + this.calender_id))
+                            URI.create(this.url + "/calendars/" + this.calenderId))
                     .header("Authorization", "Bearer " + this.accessToken)
                     .header("Accept", "application/vnd.timetree.v1+json")
                     .header("Content-Type", "application/json")
@@ -65,7 +69,7 @@ public class TimeTree {
         try{
             String event = convertJsonFormat();
 
-            URL url = new URL(this.url + "/calendars/" + this.calender_id + "/events");
+            URL url = new URL(this.url + "/calendars/" + this.calenderId + "/events");
 
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
@@ -116,7 +120,7 @@ public class TimeTree {
         attributes.put("description", "これはテストです");
 
         JSONObject relationships_data = new JSONObject();
-        relationships_data.put("id", this.calender_id + ",1");
+        relationships_data.put("id", this.calenderId + ",1");
         relationships_data.put("type", "label");
 
         JSONObject label = new JSONObject();
