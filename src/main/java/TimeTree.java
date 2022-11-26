@@ -24,11 +24,7 @@ public class TimeTree {
     public TimeTree() {
         // API TOKENの読み込み
         Properties properties = new Properties();
-        try(
-                FileInputStream file = new FileInputStream("./src/main/resources/timeTree.properties");
-                InputStreamReader input = new InputStreamReader(file, Charset.defaultCharset());
-            ){
-            properties.load(input);
+        try{
             // this.accessToken = properties.getProperty("ACCESS_TOKEN");
             this.accessToken = System.getenv("TIMETREEACCESSTOKEN");
             System.out.println(this.accessToken);
@@ -41,7 +37,7 @@ public class TimeTree {
                     .header("Accept", "application/vnd.timetree.v1+json")
                     .header("Content-Type", "application/json")
                     .build();
-        }catch (IOException e){
+        }catch (Exception e){
             System.out.println(e.getMessage());
             e.getStackTrace();
         }
