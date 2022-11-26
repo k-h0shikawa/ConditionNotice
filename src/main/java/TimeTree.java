@@ -30,10 +30,10 @@ public class TimeTree {
             ){
             properties.load(input);
             // this.accessToken = properties.getProperty("ACCESS_TOKEN");
-            this.accessToken = System.getenv("timeTreeAccessToken");
+            this.accessToken = System.getenv("TIMETREEACCESSTOKEN");
             System.out.println(this.accessToken);
             // this.calender_id = properties.getProperty("timeTreeCalenderId");
-            this.calenderId = System.getenv("timeTreeCalenderId");
+            this.calenderId = System.getenv("TIMETREECALENDERID");
             System.out.println(this.calenderId);
             this.request = HttpRequest.newBuilder(
                             URI.create(this.url + "/calendars/" + this.calenderId))
