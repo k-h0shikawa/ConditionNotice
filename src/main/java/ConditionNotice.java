@@ -6,8 +6,6 @@ public class ConditionNotice {
         TimeTree timeTree = new TimeTree();
         // System.out.println(timeTree.readEvent());
         timeTree.writeEvent();
-
-
     }
 }
 

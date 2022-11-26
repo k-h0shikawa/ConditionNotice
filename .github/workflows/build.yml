@@ -4,8 +4,8 @@ on:
   # ここでは変更がpushされたときをイベントとして指定。
   - push
 env:
-  TIMETREEACCESSTOKEN: ${{secrets.TIMETREEACCESSTOKEN}}
-  TIMETREECALENDERID: ${{secrets.TIMETREECALENDERID}}
+  TIMETREE_ACCESS_TOKEN: ${{secrets.TIMETREEACCESSTOKEN}}
+  TIMETREE_CALENDER_ID: ${{secrets.TIMETREECALENDERID}}
 # ワークフローが実行するジョブの一覧
 jobs:
   # ビルドを行うジョブ

@@ -3,7 +3,8 @@ import java.net.HttpURLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Properties;
 import java.net.URI;
 import java.net.URL;
@@ -26,10 +27,10 @@ public class TimeTree {
         Properties properties = new Properties();
         try{
             // this.accessToken = properties.getProperty("ACCESS_TOKEN");
-            this.accessToken = System.getenv("TIMETREEACCESSTOKEN");
+            this.accessToken = System.getenv("TIMETREE_ACCESS_TOKEN");
             System.out.println(this.accessToken);
             // this.calender_id = properties.getProperty("timeTreeCalenderId");
-            this.calenderId = System.getenv("TIMETREECALENDERID");
+            this.calenderId = System.getenv("TIMETREE_CALENDER_ID");
             System.out.println(this.calenderId);
             this.request = HttpRequest.newBuilder(
                             URI.create(this.url + "/calendars/" + this.calenderId))
@@ -109,9 +110,10 @@ public class TimeTree {
         attributes.put("category", "schedule");
         attributes.put("title", "register event by java");
         attributes.put("all_day", true);
-        attributes.put("start_at", "2022-10-05T00:00:00.000Z");
+        LocalDate now = LocalDate.now();
+        attributes.put("start_at", now.toString());
         attributes.put("start_timezone", "UTC");
-        attributes.put("end_at", "2022-10-05T00:00:00.000Z");
+        attributes.put("end_at", now.toString());
         attributes.put("end_timezone", "UTC");
         attributes.put("description", "これはテストです");
 
