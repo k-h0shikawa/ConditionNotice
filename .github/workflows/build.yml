@@ -3,7 +3,9 @@ name: build
 on:
   # ここでは変更がpushされたときをイベントとして指定。
   - push
-
+env:
+  TIMETREEACCESSTOKEN: ${{TIMETREEACCESSTOKEN}}
+  TIMETREECALENDERID: ${{TIMETREECALENDERID}}
 # ワークフローが実行するジョブの一覧
 jobs:
   # ビルドを行うジョブ
